@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Table</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      table {
+        width: 80%;
+        border-collapse: collapse;
+        margin: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      th {
+        background-color: #4caf50;
+        color: #fff;
+      }
+
+      tr:hover {
+        background-color: #f5f5f5;
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Address</th>
+          <th>City</th>
+          <th>State</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Add more rows as needed -->
+      </tbody>
+    </table>
+    <a href="http://localhost:8000/details.html" class="btn">Create new</a>
+    <script>
+      async function fetchData() {
+        try {
+          const response = await fetch("http://localhost:8000/list", {
+            method: "GET",
+          });
+          const data = await response.json();
+          console.log(data);
+          // Call the function to populate the table
+          populateTable(data);
+        } catch (error) {
+          console.error("Error fetching data:", error.message);
+        }
+      }
+      function populateTable(data) {
+        const tableBody = document.querySelector("tbody");
+
+        // Clear existing table rows
+        tableBody.innerHTML = "";
+
+        // Iterate over the data and create table rows
+        data.forEach((user) => {
+          const row = tableBody.insertRow();
+          const cell0 = row.insertCell(0);
+          const cell1 = row.insertCell(1);
+          const cell2 = row.insertCell(2);
+          const cell3 = row.insertCell(3);
+          const cell4 = row.insertCell(4);
+          const cell5 = row.insertCell(5);
+          const cell6 = row.insertCell(6);
+          const cell7 = row.insertCell(7);
+          let uuid = String(user.uuid);
+          cell0.textContent = user.first_name;
+          cell1.textContent = user.last_name;
+          cell2.textContent = user.address;
+          cell3.textContent = user.city;
+          cell4.textContent = user.state;
+          cell5.textContent = user.email;
+          cell6.textContent = user.phone;
+          cell7.innerHTML = `<a href='http://localhost:8000/update.html?uuid=${uuid}'>Edit</a> <button onclick="deleteItem('${uuid}')">Delete</button>`;
+        });
+      }
+      function deleteItem(uuid) {
+        console.log(uuid);
+        fetch(`http://localhost:8000/delete?uuid=${uuid}`, {
+          method: "POST",
+        }).then((response) => {
+          if (response) {
+            // If the deletion was successful, fetch and update the list
+            fetchData();
+          } else {
+            throw new Error("Failed to delete item");
+          }
+        });
+      }
+      fetchData();
+    </script>
+  </body>
+</html>
